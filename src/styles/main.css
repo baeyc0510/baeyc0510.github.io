@@ -149,7 +149,7 @@ a { color: inherit; text-decoration: none; }
   z-index: 0;
   display: block;
   /* 전체 밝기 노브: 값이 클수록 월드 밝아짐 (1 = 원본) */
-  filter: brightness(var(--world-brightness, 1.25));
+  filter: brightness(var(--world-brightness, 1));
   background: linear-gradient(180deg, #0a0a18 0%, #0d0b1a 55%, #0a0810 100%);
 }
 .world-vignette {
