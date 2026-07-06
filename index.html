@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Game Client Programmer</title>
+  <meta name="description" content="게임 클라이언트 프로그래머 포트폴리오" />
+
+  <!-- 마크다운 렌더 + 코드 하이라이트 (CDN) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" />
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <!-- ===== HERO ===== -->
+  <header id="hero">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">GAME CLIENT PROGRAMMER</p>
+      <h1 class="hero-name" data-profile="name">이름</h1>
+      <p class="hero-tagline" data-profile="tagline">한 줄 소개가 여기에 들어감.</p>
+      <a class="hero-scroll" href="#projects">↓ SCROLL</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- ===== PROJECTS (목록) ===== -->
+    <section id="projects" class="section">
+      <div class="section-head">
+        <h2 class="section-title">Projects</h2>
+        <span class="section-line"></span>
+      </div>
+      <div id="project-grid" class="project-grid">
+        <!-- 카드 자동 생성 -->
+      </div>
+    </section>
+
+    <!-- ===== PROJECT DETAIL (상세 뷰, 라우팅 시 노출) ===== -->
+    <section id="project-detail" class="section hidden">
+      <button id="detail-back" class="detail-back">← Projects</button>
+      <div class="detail-meta">
+        <h2 id="detail-title" class="detail-title"></h2>
+        <div id="detail-tags" class="detail-tags"></div>
+        <div id="detail-links" class="detail-links"></div>
+      </div>
+      <article id="detail-body" class="markdown-body"></article>
+    </section>
+
+    <!-- ===== PROFILE / CONTACT ===== -->
+    <section id="profile" class="section">
+      <div class="section-head">
+        <h2 class="section-title">Contact</h2>
+        <span class="section-line"></span>
+      </div>
+      <div id="profile-links" class="profile-links">
+        <!-- 링크 자동 생성 -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span data-profile="name">이름</span> · Game Client Programmer
+  </footer>
+
+  <!-- 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+  <!-- 앱 -->
+  <script src="assets/js/main.js"></script>
+</body>
+</html>
