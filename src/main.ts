@@ -13,6 +13,21 @@ const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)
 
 const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
+const sleep = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+function setLoading(progress: number, text: string): void {
+  const bar = document.getElementById('loading-bar');
+  const label = document.getElementById('loading-text');
+  if (bar) bar.style.width = `${Math.round(clamp01(progress) * 100)}%`;
+  if (label) label.textContent = text;
+}
+
+async function hideLoading(): Promise<void> {
+  setLoading(1, '준비 완료');
+  await sleep(180);
+  document.body.classList.remove('is-loading');
+  document.getElementById('loading-screen')?.classList.add('is-hidden');
+}
 
 function fillText(selector: string, value: string): void {
   document.querySelectorAll<HTMLElement>(selector).forEach((n) => (n.textContent = value));
@@ -117,8 +132,14 @@ async function initWorld(anchors: BiomeAnchor[], stages: StageEntry[]): Promise<
   }
 
   try {
-    const world = new PortfolioWorld(canvas);
+    const world = new PortfolioWorld(canvas, {
+      onAssetProgress: (loaded, total) => {
+        const assetProgress = total > 0 ? loaded / total : 0;
+        setLoading(0.35 + assetProgress * 0.58, `월드 에셋 로딩 중 (${loaded}/${total})`);
+      },
+    });
     await world.init(anchors);
+    setLoading(0.96, '월드 렌더링 준비 중');
     let lastAccent = '';
     world.onRender = (p) => {
       updateVisuals(p);
@@ -142,14 +163,21 @@ function startStarfield(): void {
 }
 
 async function main(): Promise<void> {
+  setLoading(0.08, '배경을 준비하는 중');
   startStarfield();
 
   let profile: Profile;
   let projects: Project[];
   try {
+    setLoading(0.18, '프로필과 프로젝트 데이터를 불러오는 중');
     [profile, projects] = await Promise.all([loadProfile(), loadProjects()]);
+    setLoading(0.35, '프로젝트 카드를 구성하는 중');
   } catch (err) {
     console.error('데이터 로드 실패:', err);
+    setLoading(1, '데이터를 불러오지 못했습니다');
+    await sleep(500);
+    document.body.classList.remove('is-loading');
+    document.getElementById('loading-screen')?.classList.add('is-hidden');
     document.getElementById('content')?.insertAdjacentHTML(
       'afterbegin',
       '<p style="padding:2rem;color:#f88">데이터를 불러오지 못했습니다.</p>',
@@ -203,6 +231,7 @@ async function main(): Promise<void> {
 
   setupReveal();
   await initWorld(anchors, stages);
+  await hideLoading();
 }
 
 main();

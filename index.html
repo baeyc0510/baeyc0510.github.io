@@ -7,9 +7,20 @@
     <meta name="description" content="Unreal / C++ 기반 게임플레이 시스템을 설계하는 클라이언트 프로그래머 포트폴리오." />
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
-  <body>
+  <body class="is-loading">
     <!-- 전역 네온 별자리 배경 (사이트 전체 뒤에 고정) -->
     <canvas id="starfield" class="starfield" aria-hidden="true"></canvas>
+
+    <div id="loading-screen" class="loading-screen" role="status" aria-live="polite" aria-label="포트폴리오 로딩 중">
+      <div class="loading-panel">
+        <div class="loading-mark" aria-hidden="true">PORTFOLIO</div>
+        <div class="loading-title">월드 준비 중</div>
+        <div class="loading-bar" aria-hidden="true">
+          <span id="loading-bar"></span>
+        </div>
+        <p id="loading-text" class="loading-text">데이터를 불러오는 중</p>
+      </div>
+    </div>
 
     <div id="nav-root"></div>
 

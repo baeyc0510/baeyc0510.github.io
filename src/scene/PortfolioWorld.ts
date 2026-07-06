@@ -42,6 +42,10 @@ export interface BiomeAnchor {
   anchor: number;
 }
 
+interface PortfolioWorldOptions {
+  onAssetProgress?: (loaded: number, total: number) => void;
+}
+
 function loadTexture(loader: THREE.TextureLoader, url: string): Promise<THREE.Texture> {
   return new Promise((resolve, reject) => {
     loader.load(url, resolve, undefined, () => reject(new Error(`텍스처 로드 실패: ${url}`)));
@@ -63,9 +67,11 @@ export class PortfolioWorld {
   private disposed = false;
   private raf = 0;
   private resizeObserver?: ResizeObserver;
+  private readonly onAssetProgress?: (loaded: number, total: number) => void;
   onRender: ((progress: number, weights: Record<string, number>) => void) | null = null;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, options: PortfolioWorldOptions = {}) {
+    this.onAssetProgress = options.onAssetProgress;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
@@ -76,7 +82,9 @@ export class PortfolioWorld {
     this.anchors = [...anchors].sort((a, b) => a.anchor - b.anchor);
     const distinct = Array.from(new Set(this.anchors.map((a) => a.biome)));
 
-    const loader = new THREE.TextureLoader();
+    const manager = new THREE.LoadingManager();
+    manager.onProgress = (_url, loaded, total) => this.onAssetProgress?.(loaded, total);
+    const loader = new THREE.TextureLoader(manager);
     for (const biome of distinct) {
       const files = BIOME_LAYERS[biome];
       const tune = BIOME_TUNE[biome];
