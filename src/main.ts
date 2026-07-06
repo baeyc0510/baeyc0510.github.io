@@ -135,7 +135,7 @@ async function initWorld(anchors: BiomeAnchor[], stages: StageEntry[]): Promise<
     const world = new PortfolioWorld(canvas, {
       onAssetProgress: (loaded, total) => {
         const assetProgress = total > 0 ? loaded / total : 0;
-        setLoading(0.35 + assetProgress * 0.58, `월드 에셋 로딩 중 (${loaded}/${total})`);
+        setLoading(0.35 + assetProgress * 0.58, '월드 에셋 로딩 중');
       },
     });
     await world.init(anchors);

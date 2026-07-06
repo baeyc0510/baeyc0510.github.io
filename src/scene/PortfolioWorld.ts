@@ -111,11 +111,25 @@ export class PortfolioWorld {
 
     this.buildParticles();
     this.resize();
+    await this.prepareGpuResources();
     window.addEventListener('resize', this.resize);
     // 4:3 프레임 크기 변화(뷰포트/레이아웃)에 반응.
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(this.renderer.domElement);
     this.loop();
+  }
+
+  private async prepareGpuResources(): Promise<void> {
+    for (const layers of this.groups.values()) {
+      for (const layer of layers) layer.uploadTexture(this.renderer);
+    }
+    this.character.uploadTextures(this.renderer);
+
+    if (this.renderer.compileAsync) {
+      await this.renderer.compileAsync(this.scene, this.camera);
+    } else {
+      this.renderer.compile(this.scene, this.camera);
+    }
   }
 
   private buildParticles(): void {

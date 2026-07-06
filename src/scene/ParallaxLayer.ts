@@ -53,6 +53,10 @@ export class ParallaxLayer {
     this.texture.offset.x = scroll * this.speed;
   }
 
+  uploadTexture(renderer: THREE.WebGLRenderer): void {
+    renderer.initTexture(this.texture);
+  }
+
   // biome 크로스페이드용 그룹 불투명도.
   setOpacity(o: number): void {
     const mat = this.mesh.material as THREE.MeshBasicMaterial;

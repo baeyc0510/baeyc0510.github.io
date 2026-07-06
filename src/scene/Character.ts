@@ -57,6 +57,12 @@ export class Character {
     scene.add(this.mesh);
   }
 
+  uploadTextures(renderer: THREE.WebGLRenderer): void {
+    for (const frames of Object.values(this.textures)) {
+      for (const texture of frames) renderer.initTexture(texture);
+    }
+  }
+
   // 프러스텀에 맞춰 위치·크기 갱신 (화면 좌측 고정).
   resize(halfWidth: number): void {
     this.mesh.position.x = -halfWidth * X_RATIO;
