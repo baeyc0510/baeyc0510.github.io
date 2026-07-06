@@ -7,6 +7,7 @@ import { ProjectStage } from './components/ProjectStage';
 import { PortfolioWorld } from './scene/PortfolioWorld';
 import type { BiomeAnchor } from './scene/PortfolioWorld';
 import { ScrollController } from './scene/ScrollController';
+import { Starfield } from './scene/Starfield';
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -135,7 +136,14 @@ async function initWorld(anchors: BiomeAnchor[], stages: StageEntry[]): Promise<
   }
 }
 
+function startStarfield(): void {
+  const canvas = document.getElementById('starfield') as HTMLCanvasElement | null;
+  if (canvas) new Starfield(canvas).start();
+}
+
 async function main(): Promise<void> {
+  startStarfield();
+
   let profile: Profile;
   let projects: Project[];
   try {

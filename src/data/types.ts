@@ -1,6 +1,6 @@
 // 프로젝트 데이터 모델. frontmatter 필드는 모두 선택적이며, 없으면 UI 에서 자동 숨김 처리.
 
-export type Biome = 'meadow' | 'kingdom' | 'night' | 'candy';
+export type Biome =  'kingdom' | 'meadow' | 'night' | 'candy';
 
 export interface ProfileLink {
   label: string;

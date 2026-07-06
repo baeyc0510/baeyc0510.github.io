@@ -3,6 +3,7 @@ import { marked } from 'marked';
 import { loadProfile, loadProjects } from './data/loadProjects';
 import type { Project } from './data/types';
 import { Nav } from './components/Nav';
+import { Starfield } from './scene/Starfield';
 
 const BASE = import.meta.env.BASE_URL;
 const home = (hash = '') => `${BASE}index.html${hash}`.replace(/([^:]\/)\/+/g, '$1');
@@ -56,6 +57,9 @@ function navFoot(prev: Project | undefined, next: Project | undefined): string {
 }
 
 async function main(): Promise<void> {
+  const sf = document.getElementById('starfield') as HTMLCanvasElement | null;
+  if (sf) new Starfield(sf).start();
+
   const profile = await loadProfile().catch(() => null);
   if (profile) document.getElementById('nav-root')?.appendChild(Nav(profile));
 

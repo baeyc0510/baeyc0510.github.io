@@ -5,7 +5,7 @@ category: Unity
 role: Gameplay Programmer
 period: 2024
 tech: [Unity, C#, URP, Addressables]
-biome: meadow
+biome: kingdom
 accent: "#5ee0a0"
 featured: true
 order: 10

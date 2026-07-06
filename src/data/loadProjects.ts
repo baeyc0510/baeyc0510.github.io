@@ -46,7 +46,7 @@ function parseBool(value: string | undefined, fallback: boolean): boolean {
   return /^(true|1|yes)$/i.test(value.trim());
 }
 
-const BIOMES: Biome[] = ['meadow', 'kingdom', 'night', 'candy'];
+const BIOMES: Biome[] = ['kingdom', 'meadow', 'night', 'candy'];
 function normalizeBiome(value: string | undefined): Biome {
   const v = value?.trim() as Biome | undefined;
   return v && BIOMES.includes(v) ? v : 'meadow';

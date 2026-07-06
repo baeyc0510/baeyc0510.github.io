@@ -9,16 +9,16 @@ const asset = (p: string) => `${BASE}${p}`.replace(/([^:])\/\//g, '$1/');
 // 각 biome 레이어 파일 (뒤 → 앞). 마지막('1')은 전경으로 캐릭터보다 앞에 그려짐.
 // GameArt2D 카툰 벡터 팩. 각 biome 은 하나의 완성 씬 (뒤 → 앞, 마지막=전경 지면/구름, 비가림).
 const BIOME_LAYERS: Record<Biome, string[]> = {
-  meadow: ['7', '6', '5', '4', '3', '2', '1'], // 하늘 → 산·언덕 → 나무 → 지면
   kingdom: ['7', '6', '5', '4', '3', '2', '1'], // 하늘 → 산 → 성 언덕 → 나무·바위 → 지면
+  meadow: ['7', '6', '5', '4', '3', '2', '1'], // 하늘 → 산·언덕 → 나무 → 지면
   night: ['9', '8', '7', '6', '5', '4', '3', '2', '1'], // 밤하늘·별 → 성 → 구름
   candy: ['6', '5', '4', '3', '2', '1'], // 하늘 → 케이크 → 나무 → 지면
 };
 
 // biome 별 세로 정렬: scale(확대·크롭), offset(세로 이동, +위). 지면을 캐릭터 발 높이(약 -0.645)에 맞춤.
 const BIOME_TUNE: Record<Biome, { scale: number; offset: number }> = {
-  meadow: { scale: 1.3, offset: 0.1 },
   kingdom: { scale: 1.3, offset: -0.05 },
+  meadow: { scale: 1.3, offset: 0.1 },
   night: { scale: 1.3, offset: 0.00 },
   candy: { scale: 1.3, offset: -0.05 },
 };
@@ -62,6 +62,7 @@ export class PortfolioWorld {
   private targetProgress = 0;
   private disposed = false;
   private raf = 0;
+  private resizeObserver?: ResizeObserver;
   onRender: ((progress: number, weights: Record<string, number>) => void) | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -103,6 +104,9 @@ export class PortfolioWorld {
     this.buildParticles();
     this.resize();
     window.addEventListener('resize', this.resize);
+    // 4:3 프레임 크기 변화(뷰포트/레이아웃)에 반응.
+    this.resizeObserver = new ResizeObserver(() => this.resize());
+    this.resizeObserver.observe(this.renderer.domElement);
     this.loop();
   }
 
@@ -133,8 +137,10 @@ export class PortfolioWorld {
   }
 
   private resize = (): void => {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
+    // 뷰포트가 아니라 캔버스(4:3 프레임)의 실제 크기에 맞춤.
+    const canvas = this.renderer.domElement;
+    const w = canvas.clientWidth || window.innerWidth;
+    const h = canvas.clientHeight || window.innerHeight;
     const aspect = w / h;
     this.camera.left = -aspect;
     this.camera.right = aspect;
@@ -220,6 +226,7 @@ export class PortfolioWorld {
     this.disposed = true;
     cancelAnimationFrame(this.raf);
     window.removeEventListener('resize', this.resize);
+    this.resizeObserver?.disconnect();
     this.renderer.dispose();
   }
 }

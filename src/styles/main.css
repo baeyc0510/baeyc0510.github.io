@@ -20,7 +20,12 @@ html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  background: var(--bg);
+  /* 네온 별자리 배경의 다크 베이스 */
+  background:
+    radial-gradient(120% 85% at 18% -5%, rgba(60, 30, 100, 0.45), transparent 55%),
+    radial-gradient(110% 80% at 92% 105%, rgba(15, 60, 95, 0.42), transparent 55%),
+    #05050c;
+  background-attachment: fixed;
   color: var(--text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -29,14 +34,40 @@ body {
 
 a { color: inherit; text-decoration: none; }
 
+/* 전역 네온 별자리 배경 (고정, 최하단) */
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
 /* ===== 2.5D WORLD (핀 고정) ===== */
-#world-pin { position: relative; z-index: 0; }
+#world-pin { position: relative; z-index: 1; }
 .world-sticky {
   position: sticky;
   top: 0;
   height: 100vh;
   overflow: hidden;
+  /* 4:3 프레임을 중앙 배치, 바깥 여백은 투명 → 별자리 배경이 비침 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
 }
+/* 중앙 4:3 스테이지. 뷰포트가 넓으면 높이 기준, 좁으면 너비 기준으로 맞춤 */
+.world-frame {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px var(--border), 0 30px 90px rgba(0, 0, 0, 0.55);
+}
+@media (min-aspect-ratio: 4 / 3) { .world-frame { height: 100%; width: auto; } }
+@media (max-aspect-ratio: 4 / 3) { .world-frame { width: 100%; height: auto; } }
 #world-canvas {
   position: absolute;
   inset: 0;
@@ -62,7 +93,8 @@ a { color: inherit; text-decoration: none; }
 /* 배경·전경·캐릭터는 모두 #world-canvas(Three) 안에서 렌더 */
 
 /* no-world 폴백: 정적 다크 배경 */
-body.no-world .world-sticky { position: static; height: auto; overflow: visible; }
+body.no-world .world-sticky { position: static; height: auto; overflow: visible; display: block; }
+body.no-world .world-frame { aspect-ratio: auto; width: 100%; height: auto; border-radius: 0; box-shadow: none; }
 body.no-world #world-pin { height: auto !important; }
 body.no-world #world-canvas,
 body.no-world .stage-cards,
@@ -299,7 +331,7 @@ body.no-world {
 
 /* ===== ALL PROJECTS GRID ===== */
 .section--grid {
-  background: linear-gradient(180deg, transparent, rgba(6, 6, 14, 0.55) 12%, var(--bg) 30%);
+  background: transparent;
 }
 .project-grid {
   display: grid;
@@ -310,7 +342,7 @@ body.no-world {
 
 /* ===== CONTACT ===== */
 .contact {
-  background: var(--bg);
+  background: transparent;
   border-top: 1px solid var(--border);
   padding: clamp(60px, 12vh, 130px) clamp(16px, 4vw, 40px) 80px;
 }
@@ -326,9 +358,9 @@ body.no-world {
 .detail-page {
   background:
     radial-gradient(70% 45% at 82% -5%, color-mix(in srgb, var(--accent, #4cc9f0) 16%, transparent), transparent 60%),
-    var(--bg);
+    transparent;
 }
-.detail { max-width: 860px; margin: 0 auto; padding: calc(var(--nav-h) + 40px) clamp(16px, 5vw, 40px) 100px; }
+.detail { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: calc(var(--nav-h) + 40px) clamp(16px, 5vw, 40px) 100px; }
 .detail-loading, .detail-missing { padding: 20vh 0; text-align: center; color: var(--muted); }
 .detail-missing h1 { color: var(--text); }
 .back-link { color: var(--accent); font-size: 0.9rem; font-weight: 600; display: inline-block; }
