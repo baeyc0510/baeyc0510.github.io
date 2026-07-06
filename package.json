@@ -1,0 +1,20 @@
+{
+  "name": "baeyc0510-portfolio",
+  "version": "1.0.0",
+  "description": "Game Client Programmer 횡스크롤 RPG 포트폴리오",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "marked": "^12.0.2",
+    "three": "^0.164.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.164.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  }
+}

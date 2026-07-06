@@ -1,7 +1,14 @@
 ---
 title: Project R
 summary: GAS 기반 액션 컴뱃 시스템과 드론 AI를 설계·구현한 Unreal 프로젝트.
+category: Unreal
+role: Client / Gameplay Programmer
+period: 2025
 tech: [Unreal Engine 5, C++, GAS, Behavior Tree]
+biome: caves
+accent: "#b14cf0"
+featured: true
+order: 20
 thumbnail: assets/img/projectr.jpg
 video: https://youtu.be/xxxxxxxxxxx
 github: https://github.com/username/projectr

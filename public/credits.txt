@@ -1,0 +1,17 @@
+ASSET CREDITS
+=============
+
+Character sprites
+  "Fantasy Vector Character" by rgsdev
+  https://rgsdev.itch.io
+  License: commercial use & modification allowed, redistribution not allowed.
+
+Parallax backgrounds (forest / caves layers)
+  "Parallax Backgrounds" from OpenGameArt.org
+  https://opengameart.org/content/parallax-backgrounds
+  License: CC-BY 4.0 (attribution required).
+
+Night sky
+  "Seamless Sky Backgrounds" by Screaming Brain Studios
+  https://opengameart.org/content/seamless-sky-backgrounds
+  License: CC0 (public domain).

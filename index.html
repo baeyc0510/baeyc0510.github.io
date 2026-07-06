@@ -1,71 +1,62 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Game Client Programmer</title>
-  <meta name="description" content="게임 클라이언트 프로그래머 포트폴리오" />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Game Client Programmer · Portfolio</title>
+    <meta name="description" content="Unreal / C++ 기반 게임플레이 시스템을 설계하는 클라이언트 프로그래머 포트폴리오." />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="nav-root"></div>
 
-  <!-- 마크다운 렌더 + 코드 하이라이트 (CDN) -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" />
+    <!-- ===== 핀 고정 2.5D 월드 (스크롤 = 가로 진행) ===== -->
+    <div id="world-pin">
+      <div class="world-sticky">
+        <!-- 배경·전경·캐릭터 모두 캔버스(Three) 내부에서 렌더 -->
+        <canvas id="world-canvas" aria-hidden="true"></canvas>
+        <div class="world-vignette" aria-hidden="true"></div>
 
-  <link rel="stylesheet" href="assets/css/style.css" />
-</head>
-<body>
-  <!-- ===== HERO ===== -->
-  <header id="hero">
-    <canvas id="hero-canvas"></canvas>
-    <div class="hero-inner">
-      <p class="hero-eyebrow">GAME CLIENT PROGRAMMER</p>
-      <h1 class="hero-name" data-profile="name">이름</h1>
-      <p class="hero-tagline" data-profile="tagline">한 줄 소개가 여기에 들어감.</p>
-      <a class="hero-scroll" href="#projects">↓ SCROLL</a>
+        <!-- HERO 오버레이 -->
+        <header id="hero" class="hero-overlay">
+          <div class="hero-inner">
+            <p class="hero-eyebrow">GAME CLIENT PROGRAMMER</p>
+            <h1 class="hero-name" data-profile="name">이름</h1>
+            <p class="hero-tagline" data-profile="tagline">한 줄 소개</p>
+            <div class="hero-cta" data-profile="links"></div>
+          </div>
+          <div class="hero-scroll">
+            <span class="hero-scroll-key">SCROLL</span>
+            <span class="hero-scroll-arrow">▾</span>
+          </div>
+        </header>
+
+        <!-- 떠오르는 스테이지 카드 오버레이 -->
+        <div id="stage-cards" class="stage-cards"></div>
+      </div>
     </div>
-  </header>
 
-  <main>
-    <!-- ===== PROJECTS (목록) ===== -->
-    <section id="projects" class="section">
-      <div class="section-head">
-        <h2 class="section-title">Projects</h2>
-        <span class="section-line"></span>
-      </div>
-      <div id="project-grid" class="project-grid">
-        <!-- 카드 자동 생성 -->
-      </div>
-    </section>
+    <!-- ===== 이후 일반 흐름: All Projects 그리드 + Contact ===== -->
+    <main id="content">
+      <section id="projects" class="section section--grid">
+        <div class="section-head reveal">
+          <h2 class="section-title">All Projects</h2>
+          <p class="section-sub">월드에서 지나친 프로젝트를 한눈에. 카드를 클릭하면 상세 페이지로 이동.</p>
+        </div>
+        <div id="project-grid" class="project-grid"></div>
+      </section>
 
-    <!-- ===== PROJECT DETAIL (상세 뷰, 라우팅 시 노출) ===== -->
-    <section id="project-detail" class="section hidden">
-      <button id="detail-back" class="detail-back">← Projects</button>
-      <div class="detail-meta">
-        <h2 id="detail-title" class="detail-title"></h2>
-        <div id="detail-tags" class="detail-tags"></div>
-        <div id="detail-links" class="detail-links"></div>
-      </div>
-      <article id="detail-body" class="markdown-body"></article>
-    </section>
+      <footer id="contact" class="contact">
+        <div class="contact-inner reveal">
+          <h2 class="section-title">Contact</h2>
+          <div class="contact-links" data-profile="links"></div>
+          <p class="credits">
+            Character: rgsdev · Backgrounds: OpenGameArt (CC-BY 4.0) · Sky: Screaming Brain Studios (CC0)
+          </p>
+        </div>
+      </footer>
+    </main>
 
-    <!-- ===== PROFILE / CONTACT ===== -->
-    <section id="profile" class="section">
-      <div class="section-head">
-        <h2 class="section-title">Contact</h2>
-        <span class="section-line"></span>
-      </div>
-      <div id="profile-links" class="profile-links">
-        <!-- 링크 자동 생성 -->
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <span data-profile="name">이름</span> · Game Client Programmer
-  </footer>
-
-  <!-- 라이브러리 -->
-  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
-  <!-- 앱 -->
-  <script src="assets/js/main.js"></script>
-</body>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
