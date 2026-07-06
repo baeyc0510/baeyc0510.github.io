@@ -2,8 +2,10 @@ import type { Project } from '../data/types';
 import { ProjectCard } from './ProjectCard';
 
 const BIOME_LABEL: Record<string, string> = {
-  forest: 'FOREST',
-  caves: 'DUNGEON',
+  meadow: 'MEADOW',
+  kingdom: 'KINGDOM',
+  night: 'NIGHT SKY',
+  candy: 'CANDY',
 };
 
 // 월드 위에 얹히는 프로젝트 스테이지 패널.

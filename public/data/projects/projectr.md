@@ -5,7 +5,7 @@ category: Unreal
 role: Client / Gameplay Programmer
 period: 2025
 tech: [Unreal Engine 5, C++, GAS, Behavior Tree]
-biome: caves
+biome: kingdom
 accent: "#b14cf0"
 featured: true
 order: 20

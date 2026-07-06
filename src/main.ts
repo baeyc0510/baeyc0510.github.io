@@ -65,6 +65,7 @@ interface StageEntry {
 // 스크롤 진행률에 따라 히어로 페이드 + 카드 float-up 갱신. (배경·전경·캐릭터는 캔버스가 담당)
 function buildVisualUpdater(stages: StageEntry[]) {
   const hero = document.getElementById('hero');
+  const skip = document.getElementById('skip-btn');
   const heroEnd = 0.14;
 
   return (p: number): void => {
@@ -74,6 +75,8 @@ function buildVisualUpdater(stages: StageEntry[]) {
       hero.style.transform = `translateY(${-t * 40}px)`;
       hero.style.pointerEvents = t > 0.5 ? 'none' : '';
     }
+    // 히어로 SCROLL 이 사라진 뒤(월드 탐색 중) Skip 노출, 끝 부근에선 숨김.
+    if (skip) skip.classList.toggle('is-visible', p > 0.12 && p < 0.98);
     for (const s of stages) {
       const d = Math.abs((p - s.center) / s.slot);
       const v = clamp01((0.5 - d) / 0.22);
@@ -184,6 +187,11 @@ async function main(): Promise<void> {
 
   // 핀 구간 높이 = 히어로 + 프로젝트 수 기반. 최소 320vh.
   if (pin) pin.style.height = `${Math.max(320, (1 + N) * 150)}vh`;
+
+  // Skip → All Projects 로 바로 이동.
+  document.getElementById('skip-btn')?.addEventListener('click', () => {
+    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
+  });
 
   setupReveal();
   await initWorld(anchors, stages);

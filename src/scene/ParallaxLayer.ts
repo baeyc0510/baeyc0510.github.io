@@ -20,6 +20,7 @@ export class ParallaxLayer {
     const img = texture.image as HTMLImageElement;
     this.imageAspect = img.width / img.height;
 
+    texture.colorSpace = THREE.SRGBColorSpace;
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.ClampToEdgeWrapping;
     texture.magFilter = THREE.LinearFilter;

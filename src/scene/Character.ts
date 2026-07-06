@@ -14,7 +14,7 @@ const FPS: Record<State, number> = { idle: 5, run: 9 };
 // 화면 좌측에 고정된 캐릭터 스프라이트 (캔버스 내부, 중경 앞 / 전경 뒤).
 // 배경이 이동해 지면이 이 캐릭터 발 높이에 맞춰짐.
 const CHAR_HEIGHT = 0.72; // 오쏘 단위 (반높이 1 기준).
-const BASE_Y = -0.4; // 발이 지면선(약 -0.62)에 오도록 중심 위치.
+const BASE_Y = -0.6; // 발이 지면선(약 -0.62)에 오도록 중심 위치.
 const X_RATIO = 0.5; // 화면 좌측 (aspect 대비).
 
 export class Character {
@@ -38,6 +38,8 @@ export class Character {
     const load = (name: string) =>
       new Promise<THREE.Texture>((resolve, reject) => {
         loader.load(frameUrl(name), (t) => {
+          // 원본 PNG 색 그대로 렌더 (sRGB 미지정 시 감마 어긋나 틴트처럼 보임).
+          t.colorSpace = THREE.SRGBColorSpace;
           t.magFilter = THREE.LinearFilter;
           t.minFilter = THREE.LinearFilter;
           t.generateMipmaps = false;

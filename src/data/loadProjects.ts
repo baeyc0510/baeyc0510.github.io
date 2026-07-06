@@ -46,10 +46,10 @@ function parseBool(value: string | undefined, fallback: boolean): boolean {
   return /^(true|1|yes)$/i.test(value.trim());
 }
 
-const BIOMES: Biome[] = ['forest', 'caves', 'snowy', 'plains'];
+const BIOMES: Biome[] = ['meadow', 'kingdom', 'night', 'candy'];
 function normalizeBiome(value: string | undefined): Biome {
   const v = value?.trim() as Biome | undefined;
-  return v && BIOMES.includes(v) ? v : 'forest';
+  return v && BIOMES.includes(v) ? v : 'meadow';
 }
 
 function toProject(id: string, fm: FrontMatter, indexOrder: number): Project {

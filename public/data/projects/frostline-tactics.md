@@ -5,7 +5,7 @@ category: Gameplay
 role: AI / Systems Programmer
 period: 2024
 tech: [Unreal Engine 5, C++, Blueprint, EQS]
-biome: snowy
+biome: night
 accent: "#7ee0ff"
 featured: false
 order: 30

@@ -7,23 +7,35 @@ const BASE = import.meta.env.BASE_URL;
 const asset = (p: string) => `${BASE}${p}`.replace(/([^:])\/\//g, '$1/');
 
 // 각 biome 레이어 파일 (뒤 → 앞). 마지막('1')은 전경으로 캐릭터보다 앞에 그려짐.
+// GameArt2D 카툰 벡터 팩. 각 biome 은 하나의 완성 씬 (뒤 → 앞, 마지막=전경 지면/구름, 비가림).
 const BIOME_LAYERS: Record<Biome, string[]> = {
-  forest: ['6', '5', '4', '3', '2', '1'],
-  caves: ['7', '6', '5', '4', '3', '2', '1'],
-  plains: ['8', '7', '6', '5', '4', '3', '2', '1'],
-  snowy: ['5', '4', '3', '2', '1'],
+  meadow: ['7', '6', '5', '4', '3', '2', '1'], // 하늘 → 산·언덕 → 나무 → 지면
+  kingdom: ['7', '6', '5', '4', '3', '2', '1'], // 하늘 → 산 → 성 언덕 → 나무·바위 → 지면
+  night: ['9', '8', '7', '6', '5', '4', '3', '2', '1'], // 밤하늘·별 → 성 → 구름
+  candy: ['6', '5', '4', '3', '2', '1'], // 하늘 → 케이크 → 나무 → 지면
 };
 
 // biome 별 세로 정렬: scale(확대·크롭), offset(세로 이동, +위). 지면을 캐릭터 발 높이(약 -0.645)에 맞춤.
 const BIOME_TUNE: Record<Biome, { scale: number; offset: number }> = {
-  forest: { scale: 1.5, offset: 0.0 },
-  caves: { scale: 1.5, offset: 0.38 },
-  snowy: { scale: 1.5, offset: 0.55 },
-  plains: { scale: 1.5, offset: 0.55 },
+  meadow: { scale: 1.3, offset: 0.1 },
+  kingdom: { scale: 1.3, offset: -0.05 },
+  night: { scale: 1.3, offset: 0.00 },
+  candy: { scale: 1.3, offset: -0.05 },
 };
 
 const FG_RENDER_ORDER = 200;
 const TRAVEL = 7;
+
+// 앵커 사이에서 실제 크로스페이드가 일어나는 구간 폭(0~1, 중앙 기준).
+// 작을수록 각 씬이 더 오래 단독 유지되고 전환은 중앙에서 짧게(=오버랩 늦게·짧게).
+// 클수록 더 넓게·일찍 겹침.
+const TRANSITION = 0.4;
+
+// smoothstep: 0..1 부드러운 전환.
+const smoothstep = (x: number) => {
+  const c = Math.max(0, Math.min(1, x));
+  return c * c * (3 - 2 * c);
+};
 
 export interface BiomeAnchor {
   biome: Biome;
@@ -161,9 +173,12 @@ export class PortfolioWorld {
     for (let i = 0; i < a.length - 1; i++) {
       if (p >= a[i].anchor && p <= a[i + 1].anchor) {
         const span = a[i + 1].anchor - a[i].anchor || 1;
-        const t = (p - a[i].anchor) / span;
-        out[a[i].biome] = (out[a[i].biome] ?? 0) + (1 - t);
-        out[a[i + 1].biome] = (out[a[i + 1].biome] ?? 0) + t;
+        const raw = (p - a[i].anchor) / span;
+        // 구간 양끝에서는 각 씬 단독 유지, 중앙 TRANSITION 폭에서만 전환.
+        const edge0 = 0.5 - TRANSITION / 2;
+        const b = smoothstep((raw - edge0) / TRANSITION);
+        out[a[i].biome] = (out[a[i].biome] ?? 0) + (1 - b);
+        out[a[i + 1].biome] = (out[a[i + 1].biome] ?? 0) + b;
         break;
       }
     }
