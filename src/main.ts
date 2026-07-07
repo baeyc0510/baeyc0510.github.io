@@ -246,7 +246,7 @@ async function main(): Promise<void> {
 
   // 핀 구간 높이 = 히어로 + 프로젝트 수 기반. 섹션당 SECTION_VH.
   // 낮출수록 끝까지 필요한 스크롤 양이 줄어듦(쾌적). 높이면 각 섹션을 더 천천히 훑음.
-  const SECTION_VH = 100;
+  const SECTION_VH = 75;
   if (pin) pin.style.height = `${Math.max(240, (1 + N) * SECTION_VH)}vh`;
 
   // Skip → All Projects 로 바로 이동.
