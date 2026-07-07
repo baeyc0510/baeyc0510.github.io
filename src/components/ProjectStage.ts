@@ -8,25 +8,44 @@ const BIOME_LABEL: Record<string, string> = {
   candy: 'CANDY',
 };
 
-// 월드 위에 얹히는 프로젝트 스테이지 패널.
+// 월드 위에 얹히는 프로젝트 스테이지 = 나무 표지판.
+// 구조: 기둥(post) + 방향 촉(tip) + 보드(board: 헤더 배너 + 프로젝트 카드).
 export function ProjectStage(project: Project, stageNo: number): HTMLElement {
   const section = document.createElement('section');
-  section.className = 'stage';
+  section.className = 'stage stage--sign';
   section.dataset.accent = project.accent;
   section.style.setProperty('--accent', project.accent);
 
-  const inner = document.createElement('div');
-  inner.className = 'stage-inner';
+  const sign = document.createElement('div');
+  sign.className = 'sign';
 
-  const label = document.createElement('div');
-  label.className = 'stage-label';
+  // 땅에 박힌 세로 기둥 (보드 뒤).
+  const post = document.createElement('span');
+  post.className = 'sign-post';
+  post.setAttribute('aria-hidden', 'true');
+  sign.appendChild(post);
+
+  // 왼쪽 방향 촉 (이정표 느낌, 진행 방향과 일치).
+  const tip = document.createElement('span');
+  tip.className = 'sign-tip';
+  tip.setAttribute('aria-hidden', 'true');
+  sign.appendChild(tip);
+
+  // 나무 보드.
+  const board = document.createElement('div');
+  board.className = 'sign-board';
+
+  const header = document.createElement('div');
+  header.className = 'sign-header';
   const no = String(stageNo).padStart(2, '0');
-  label.innerHTML = `<span class="stage-no">STAGE ${no}</span><span class="stage-biome">${
+  header.innerHTML = `<span class="sign-no">STAGE ${no}</span><span class="sign-biome">${
     BIOME_LABEL[project.biome] ?? project.biome.toUpperCase()
   }</span>`;
-  inner.appendChild(label);
+  board.appendChild(header);
 
-  inner.appendChild(ProjectCard(project, 'stage'));
-  section.appendChild(inner);
+  board.appendChild(ProjectCard(project, 'stage'));
+  sign.appendChild(board);
+
+  section.appendChild(sign);
   return section;
 }

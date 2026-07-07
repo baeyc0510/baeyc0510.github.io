@@ -4,6 +4,8 @@ import type { Profile, Project } from './data/types';
 import { Nav } from './components/Nav';
 import { ProjectCard } from './components/ProjectCard';
 import { ProjectStage } from './components/ProjectStage';
+import { WorldProgress } from './components/WorldProgress';
+import type { ProgressStop, WorldProgressHandle } from './components/WorldProgress';
 import { PortfolioWorld } from './scene/PortfolioWorld';
 import type { BiomeAnchor } from './scene/PortfolioWorld';
 import { ScrollController } from './scene/ScrollController';
@@ -79,12 +81,17 @@ interface StageEntry {
 }
 
 // 스크롤 진행률에 따라 히어로 페이드 + 카드 float-up 갱신. (배경·전경·캐릭터는 캔버스가 담당)
-function buildVisualUpdater(stages: StageEntry[]) {
+function buildVisualUpdater(stages: StageEntry[], progress?: WorldProgressHandle) {
   const hero = document.getElementById('hero');
   const skip = document.getElementById('skip-btn');
   const heroEnd = 0.14;
 
   return (p: number): void => {
+    if (progress) {
+      // 월드 구간 동안만 진행바 노출. 마지막 꼬리 구간에선 숨김.
+      progress.el.classList.toggle('is-visible', p < 0.985);
+      progress.update(p);
+    }
     if (hero) {
       const t = clamp01(p / heroEnd);
       hero.style.opacity = String(1 - t);
@@ -93,13 +100,20 @@ function buildVisualUpdater(stages: StageEntry[]) {
     }
     // 히어로 SCROLL 이 사라진 뒤(월드 탐색 중) Skip 노출, 끝 부근에선 숨김.
     if (skip) skip.classList.toggle('is-visible', p > 0.12 && p < 0.98);
+    // 카드 가로 통과: 오른쪽 밖(등장) → 중앙(선명) → 왼쪽(퇴장). 정지 구간 없이 스크롤에 연동.
+    const span = Math.min(window.innerWidth, (window.innerHeight * 4) / 3);
     for (const s of stages) {
-      const d = Math.abs((p - s.center) / s.slot);
-      const v = clamp01((0.5 - d) / 0.22);
+      // t: 카드 중심 기준 부호 있는 진행량(slot 단위). 0 에서 가장 선명.
+      const t = (p - s.center) / s.slot;
+      const tc = Math.max(-1, Math.min(1, t));
+      const v = clamp01((0.55 - Math.abs(t)) / 0.28);
       const e = easeOutCubic(v);
       s.el.style.opacity = String(e);
+      // 가로 흐름(주): 스크롤 진행 시 왼쪽으로 흘러감. 세로(부): 살짝 부유감만 남김.
       // 중앙정렬 transform(translateY -50%)과 분리하기 위해 translate 속성 사용.
-      s.el.style.translate = `0 ${(1 - e) * 46}px`;
+      const driftX = -tc * span * 0.2;
+      const floatY = (1 - e) * 18;
+      s.el.style.translate = `${driftX}px ${floatY}px`;
       s.el.style.pointerEvents = e > 0.6 ? 'auto' : 'none';
     }
   };
@@ -119,12 +133,16 @@ function activeAccent(stages: StageEntry[], p: number): string | null {
   return best && bestD < best.slot * 0.6 ? best.accent : null;
 }
 
-async function initWorld(anchors: BiomeAnchor[], stages: StageEntry[]): Promise<void> {
+async function initWorld(
+  anchors: BiomeAnchor[],
+  stages: StageEntry[],
+  progress?: WorldProgressHandle,
+): Promise<void> {
   const canvas = document.getElementById('world-canvas') as HTMLCanvasElement | null;
   const pin = document.getElementById('world-pin');
   if (!canvas || !pin) return;
 
-  const updateVisuals = buildVisualUpdater(stages);
+  const updateVisuals = buildVisualUpdater(stages, progress);
 
   if (prefersReducedMotion) {
     document.body.classList.add('no-world');
@@ -200,12 +218,16 @@ async function main(): Promise<void> {
   const pin = document.getElementById('world-pin');
 
   const heroEnd = 0.14;
-  const tail = 0.08;
+  // tail 0 = 마지막 카드 뒤 빈 여백 없음. 마지막 카드가 흘러나가는 시점에 핀이 풀려
+  // 곧바로 All Projects 로 이어짐(빈 구간 스크롤 제거).
+  const tail = 0;
   const N = projects.length;
   const band = Math.max(0.001, 1 - heroEnd - tail);
   const stages: StageEntry[] = [];
   // 히어로 구간은 첫 프로젝트 biome 으로 시작.
   const anchors: BiomeAnchor[] = [{ biome: projects[0]?.biome ?? 'forest', anchor: 0 }];
+  // 진행바 노드: 인트로(히어로) + 각 프로젝트 섹션.
+  const stops: ProgressStop[] = [{ center: 0, label: 'Intro', accent: '#8fa0c8' }];
 
   projects.forEach((p, i) => {
     const center = heroEnd + (band * (i + 0.5)) / N;
@@ -215,22 +237,36 @@ async function main(): Promise<void> {
       stageRoot.appendChild(card);
       stages.push({ el: card, center, slot: band / N, accent: p.accent });
     }
+    stops.push({ center, label: p.title, accent: p.accent });
     anchors.push({ biome: p.biome, anchor: center });
     if (grid) grid.appendChild(ProjectCard(p, 'grid'));
   });
 
   if (grid && N === 0) grid.innerHTML = '<p class="empty">표시할 프로젝트가 없습니다.</p>';
 
-  // 핀 구간 높이 = 히어로 + 프로젝트 수 기반. 최소 320vh.
-  if (pin) pin.style.height = `${Math.max(320, (1 + N) * 150)}vh`;
+  // 핀 구간 높이 = 히어로 + 프로젝트 수 기반. 섹션당 SECTION_VH.
+  // 낮출수록 끝까지 필요한 스크롤 양이 줄어듦(쾌적). 높이면 각 섹션을 더 천천히 훑음.
+  const SECTION_VH = 100;
+  if (pin) pin.style.height = `${Math.max(240, (1 + N) * SECTION_VH)}vh`;
 
   // Skip → All Projects 로 바로 이동.
   document.getElementById('skip-btn')?.addEventListener('click', () => {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
   });
 
+  // 진행바 노드 클릭 → 해당 섹션의 스크롤 위치로 이동.
+  // 진행률 center 는 핀 구간 내에서 (핀상단 + center*range) 로 역산.
+  const seekTo = (center: number): void => {
+    if (!pin) return;
+    const pinTop = pin.getBoundingClientRect().top + window.scrollY;
+    const range = Math.max(0, pin.offsetHeight - window.innerHeight);
+    window.scrollTo({ top: pinTop + center * range, behavior: 'smooth' });
+  };
+  const progress = N > 0 ? WorldProgress(stops, seekTo) : undefined;
+  if (progress) document.body.appendChild(progress.el);
+
   setupReveal();
-  await initWorld(anchors, stages);
+  await initWorld(anchors, stages, progress);
   await hideLoading();
 }
 
